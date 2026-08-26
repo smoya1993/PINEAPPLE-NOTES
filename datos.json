@@ -23,16 +23,6 @@
       "updatedAt": 1787682303407
     },
     {
-      "id": "reuniones-internas-deloitte",
-      "title": "Internas Deloitte",
-      "icon": "🏠",
-      "parentId": "reuniones",
-      "order": 0,
-      "content": "<p></p>",
-      "createdAt": 1787682303407,
-      "updatedAt": 1787682303407
-    },
-    {
       "id": "reuniones-internas-cosas-comentar",
       "title": "Reuniones internas · Cosas que comentar",
       "icon": "💬",
