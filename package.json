@@ -1,0 +1,22 @@
+{
+  "name": "pineapple-notes-enterprise",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pineapple Notes - Sistema empresarial de gestión del conocimiento, notas ricas, tareas y seguimiento de reuniones con almacenamiento local en disco.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "serve": "node server.js"
+  },
+  "keywords": [
+    "notes",
+    "file-system-access-api",
+    "markdown",
+    "wysiwyg",
+    "productivity",
+    "enterprise"
+  ],
+  "author": "Pineapple Notes Team",
+  "license": "MIT"
+}

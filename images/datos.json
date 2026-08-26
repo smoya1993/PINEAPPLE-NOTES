@@ -1,0 +1,103 @@
+{
+  "version": 7,
+  "activeId": "p_mta3hxjbaq22i7",
+  "pages": [
+    {
+      "id": "welcome",
+      "title": "Bienvenido a Piña Notes",
+      "icon": "📝",
+      "parentId": null,
+      "order": 0,
+      "content": "",
+      "createdAt": 1787682303397,
+      "updatedAt": 1787683154526
+    },
+    {
+      "id": "reuniones",
+      "title": "Reuniones",
+      "icon": "📅",
+      "parentId": null,
+      "order": 2,
+      "content": "<p>Notas, acuerdos y acciones de reuniones.</p>",
+      "createdAt": 1787682303407,
+      "updatedAt": 1787682303407
+    },
+    {
+      "id": "reuniones-internas-deloitte",
+      "title": "Internas Deloitte",
+      "icon": "🏠",
+      "parentId": "reuniones",
+      "order": 0,
+      "content": "<p></p>",
+      "createdAt": 1787682303407,
+      "updatedAt": 1787682303407
+    },
+    {
+      "id": "reuniones-internas-cosas-comentar",
+      "title": "Reuniones internas · Cosas que comentar",
+      "icon": "💬",
+      "parentId": null,
+      "order": 3,
+      "content": "<p>Esta página se genera automáticamente.</p>",
+      "createdAt": 1787682303407,
+      "updatedAt": 1787682337184
+    },
+    {
+      "id": "p_mt90jqyqbuv42c",
+      "title": "Sin título",
+      "icon": "📄",
+      "parentId": null,
+      "order": 4,
+      "content": "<p><br></p>",
+      "createdAt": 1787683414850,
+      "updatedAt": 1787683414850
+    },
+    {
+      "id": "tareas-raul",
+      "title": "Tareas Raúl",
+      "icon": "✅",
+      "parentId": null,
+      "order": 1,
+      "content": "<p>Gestor personal de tareas.</p>",
+      "createdAt": 1787748828293,
+      "updatedAt": 1787748828293
+    },
+    {
+      "id": "p_mta3hxjbaq22i7",
+      "title": "Curso",
+      "icon": "📄",
+      "parentId": null,
+      "order": 5,
+      "content": "<p><br></p>",
+      "createdAt": 1787748835079,
+      "updatedAt": 1787748853664
+    }
+  ],
+  "meetingItems": [
+    {
+      "id": "mi_mt90j4kpo9yw67",
+      "sourcePageId": "reuniones",
+      "sourceTitle": "Reuniones",
+      "sourcePath": "Reuniones",
+      "text": "otas, acuerdos y acciones de reuniones.",
+      "html": "otas, acuerdos y acciones de reuniones.",
+      "status": "open",
+      "createdAt": 1787683385833,
+      "updatedAt": 1787683385833
+    }
+  ],
+  "taskItems": [
+    {
+      "id": "task_mt90l254y5t2sn",
+      "title": "hola",
+      "details": "",
+      "priority": "normal",
+      "dueDate": "",
+      "status": "pending",
+      "createdAt": 1787683475992,
+      "updatedAt": 1787683475992,
+      "completedAt": null
+    }
+  ],
+  "favorites": []
+}

@@ -1,0 +1,105 @@
+{
+  "version": 7,
+  "activeId": "p_mta3ltk8x9s6vz",
+  "pages": [
+    {
+      "id": "welcome",
+      "title": "Formaciones y proyectos",
+      "icon": "📝",
+      "parentId": null,
+      "order": 0,
+      "content": "<p class=\"code-after\"><br></p><p>\n      </p><p class=\"code-after\"><br></p>",
+      "createdAt": 1787682303397,
+      "updatedAt": 1787749031535
+    },
+    {
+      "id": "reuniones",
+      "title": "Reuniones",
+      "icon": "📅",
+      "parentId": null,
+      "order": 2,
+      "content": "<p>Notas, acuerdos y acciones de reuniones.</p>",
+      "createdAt": 1787682303407,
+      "updatedAt": 1787682303407
+    },
+    {
+      "id": "reuniones-internas-deloitte",
+      "title": "Internas Deloitte",
+      "icon": "🏠",
+      "parentId": "reuniones",
+      "order": 0,
+      "content": "<p></p>",
+      "createdAt": 1787682303407,
+      "updatedAt": 1787682303407
+    },
+    {
+      "id": "reuniones-internas-cosas-comentar",
+      "title": "Reuniones internas · Cosas que comentar",
+      "icon": "💬",
+      "parentId": null,
+      "order": 3,
+      "content": "<p>Esta página se genera automáticamente.</p>",
+      "createdAt": 1787682303407,
+      "updatedAt": 1787682337184
+    },
+    {
+      "id": "p_mt90jqyqbuv42c",
+      "title": "Sin título",
+      "icon": "📄",
+      "parentId": null,
+      "order": 4,
+      "content": "<p><br></p>",
+      "createdAt": 1787683414850,
+      "updatedAt": 1787748912107
+    },
+    {
+      "id": "tareas-raul",
+      "title": "Tareas Raúl",
+      "icon": "✅",
+      "parentId": null,
+      "order": 1,
+      "content": "<p>Gestor personal de tareas.</p>",
+      "createdAt": 1787683721508,
+      "updatedAt": 1787683721508
+    },
+    {
+      "id": "p_mta3ltk8x9s6vz",
+      "title": "Instalación y configuración de N8N",
+      "icon": "🗒️",
+      "parentId": "welcome",
+      "order": 0,
+      "content": "<div class=\"code-block\" contenteditable=\"false\">\n        <div class=\"code-head\">\n          <select class=\"code-lang\">\n            <option value=\"javascript\">JavaScript</option><option value=\"typescript\">TypeScript</option><option value=\"python\">Python</option><option value=\"sql\">SQL</option><option value=\"bash\">Bash</option><option value=\"json\">JSON</option><option value=\"html\">HTML</option><option value=\"css\">CSS</option><option value=\"text\">Texto</option>\n          </select>\n          <span class=\"spacer\"></span>\n          <button class=\"code-copy\" type=\"button\">Copiar</button>\n          <button class=\"code-delete\" type=\"button\" title=\"Eliminar bloque\">✕</button>\n        </div>\n        <div class=\"code-area\">\n          <pre class=\"code-view\"></pre>\n          <textarea class=\"code-input\" spellcheck=\"false\">dasdasdasdasdsa código aquí</textarea>\n        </div>\n      </div><p>\n      </p><p class=\"code-after\"><br></p>",
+      "createdAt": 1787749016553,
+      "updatedAt": 1787749148461
+    }
+  ],
+  "meetingItems": [
+    {
+      "id": "mi_mt90j4kpo9yw67",
+      "sourcePageId": "reuniones",
+      "sourceTitle": "Reuniones",
+      "sourcePath": "Reuniones",
+      "text": "otas, acuerdos y acciones de reuniones.",
+      "html": "otas, acuerdos y acciones de reuniones.",
+      "status": "open",
+      "createdAt": 1787683385833,
+      "updatedAt": 1787683385833
+    }
+  ],
+  "taskItems": [
+    {
+      "id": "task_mt90l254y5t2sn",
+      "title": "hola",
+      "details": "",
+      "priority": "normal",
+      "dueDate": "",
+      "status": "pending",
+      "createdAt": 1787683475992,
+      "updatedAt": 1787683475992,
+      "completedAt": null
+    }
+  ],
+  "favorites": [
+    "welcome"
+  ]
+}

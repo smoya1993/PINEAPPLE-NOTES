@@ -1,0 +1,83 @@
+:root {
+  /* Colors - Light Palette */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #fbfbfb;
+  --surface-subtle: #f7f7f5;
+  --side: #f7f7f5;
+  --text: #242424;
+  --text-secondary: #5a5d63;
+  --muted: #6f6f6b;
+  --line: #dededb;
+  --line-subtle: #eaeaea;
+  --hover: #ececea;
+  --active: #dcecff;
+  --active-text: #1264a3;
+  --input-bg: #ffffff;
+  --overlay: rgba(20, 22, 24, 0.48);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 12px 34px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.22);
+  --focus: #2383e2;
+  --focus-ring: rgba(35, 131, 226, 0.35);
+  --blue: #2383e2;
+  --blue-subtle: #edf5ff;
+  --green: #388e3c;
+  --green-subtle: #edf8ef;
+  --yellow: #f59e0b;
+  --yellow-subtle: #fff7d6;
+  --red: #d44c47;
+  --red-subtle: #fff0f0;
+  --editor-scale: 1;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+  /* Transition timings */
+  --transition-fast: 0.12s ease;
+  --transition-normal: 0.2s ease;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  color-scheme: light;
+}
+
+html.dark {
+  /* Colors - Dark Palette */
+  --bg: #18191b;
+  --surface: #24262a;
+  --surface-raised: #2b2e33;
+  --surface-subtle: #202226;
+  --side: #202226;
+  --text: #f0f1f2;
+  --text-secondary: #c4cad1;
+  --muted: #b4b8be;
+  --line: #454a52;
+  --line-subtle: #363a42;
+  --hover: #31353b;
+  --active: #183b5b;
+  --active-text: #a8d7ff;
+  --input-bg: #202226;
+  --overlay: rgba(0, 0, 0, 0.72);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 34px rgba(0, 0, 0, 0.52);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.65);
+  --focus: #79c0ff;
+  --focus-ring: rgba(121, 192, 255, 0.35);
+  --blue: #79c0ff;
+  --blue-subtle: #192a3d;
+  --green: #7ee787;
+  --green-subtle: #1b2f21;
+  --yellow: #ffd75c;
+  --yellow-subtle: #3d3215;
+  --red: #ff7b72;
+  --red-subtle: #3b2020;
+
+  color-scheme: dark;
+}

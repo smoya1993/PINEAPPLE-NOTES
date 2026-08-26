@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pineapple Notes Enterprise</title>
+  <link rel="icon" type="image/x-icon" href="pina.ico">
+
+  <!-- Modular Design System Stylesheets -->
+  <link rel="stylesheet" href="src/styles/variables.css">
+  <link rel="stylesheet" href="src/styles/base.css">
+  <link rel="stylesheet" href="src/styles/components.css">
+  <link rel="stylesheet" href="src/styles/editor.css">
+  <link rel="stylesheet" href="src/styles/tasks.css">
+  <link rel="stylesheet" href="src/styles/meetings.css">
+  <link rel="stylesheet" href="src/styles/modals.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar / Navegación y Árbol Jerárquico -->
+    <aside class="sidebar">
+      <div class="brand">
+        <svg class="brand-logo" viewBox="0 0 250 38" role="img" aria-label="Pineapple Notes Enterprise">
+          <defs>
+            <linearGradient id="pnFruit" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffe36e"/>
+              <stop offset=".55" stop-color="#f7b733"/>
+              <stop offset="1" stop-color="#e79018"/>
+            </linearGradient>
+            <linearGradient id="pnLeaves" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#8bd450"/>
+              <stop offset="1" stop-color="#2f9d62"/>
+            </linearGradient>
+          </defs>
+          <g class="pineapple">
+            <path d="M17 14c-5-5-7-10-6-13 5 2 8 6 9 11 0-6 2-10 6-12 1 5-1 10-5 14 5-4 10-5 14-3-3 5-8 7-14 7z" fill="url(#pnLeaves)"/>
+            <path d="M10 17c2-3 15-3 18 0 4 6 3 15-2 19-4 3-11 3-15 0-5-4-6-13-1-19z" fill="url(#pnFruit)"/>
+            <path d="M12 20l13 13m-15-7 9 10m8-15L13 34m15-7-8 9" fill="none" stroke="#c87816" stroke-width="2.1" stroke-linecap="round" opacity=".78"/>
+          </g>
+          <text x="44" y="26" class="wordmark-text" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="16" letter-spacing="1.2" fill="var(--text)">PINEAPPLE <tspan font-weight="400" font-size="14.5" fill="var(--muted)">NOTES</tspan></text>
+        </svg>
+      </div>
+
+      <input id="search" class="search" placeholder="Buscar en notas..." aria-label="Buscar notas">
+      <button id="new" class="new-btn" type="button">＋ Nueva nota</button>
+      <div id="pages" class="pages"></div>
+
+      <!-- Controles de Visualización y Zoom -->
+      <div class="view-controls">
+        <button id="fontDown" type="button" title="Reducir escala">A−</button>
+        <button id="zoomValue" class="zoom-value" type="button" title="Restablecer tamaño (100%)">100%</button>
+        <button id="fontUp" type="button" title="Aumentar escala">A+</button>
+        <button id="themeToggle" class="theme-btn" type="button" title="Cambiar tema">◐ Oscuro</button>
+      </div>
+
+      <!-- Acciones de Almacenamiento -->
+      <div class="footer">
+        <button id="folder" type="button" title="Abrir carpeta local">📁 Carpeta</button>
+        <button id="export" type="button" title="Descargar copia JSON de respaldo">💾 Backup JSON</button>
+        <button id="exportMd" type="button" title="Exportar la nota actual a formato Markdown">📝 Markdown</button>
+        <button id="exportPdf" type="button" title="Exportar la nota actual a documento PDF">📄 PDF</button>
+      </div>
+    </aside>
+
+    <!-- Área Principal de Edición -->
+    <main class="main">
+      <header class="top">
+        <div class="top-left">
+          <span id="crumb" class="crumb"></span>
+        </div>
+        <div class="top-right">
+          <span id="connection" class="connection" title="Carpeta de datos vinculada">
+            <span class="connection-dot"></span>
+            <span id="connectionText"></span>
+          </span>
+          <span id="status" class="status">Sin carpeta</span>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- Fila de Título y Favorito -->
+        <div class="title-row">
+          <button id="icon" class="page-icon" type="button" title="Cambiar icono de nota">📝</button>
+          <input id="title" class="title" placeholder="Sin título" aria-label="Título de la nota">
+          <button id="favoriteBtn" class="favorite-title-btn" type="button" title="Añadir a Favoritos" aria-label="Añadir a Favoritos">☆</button>
+        </div>
+
+        <!-- Barra de Herramientas WYSIWYG -->
+        <div class="toolbar" id="toolbar" role="toolbar" aria-label="Herramientas de edición">
+          <button data-cmd="bold" type="button" title="Negrita (Ctrl+B)" aria-label="Negrita"><b>B</b></button>
+          <button data-cmd="italic" type="button" title="Cursiva (Ctrl+I)" aria-label="Cursiva"><i>I</i></button>
+          <button data-cmd="underline" type="button" title="Subrayado (Ctrl+U)" aria-label="Subrayado"><u>U</u></button>
+          <button data-cmd="strikeThrough" type="button" title="Tachado" aria-label="Tachado"><s>S</s></button>
+          <span class="sep"></span>
+
+          <button data-block="h1" type="button" title="Título Principal (H1)" aria-label="Título 1">H1</button>
+          <button data-block="h2" type="button" title="Subtítulo (H2)" aria-label="Título 2">H2</button>
+          <button data-block="p" type="button" title="Párrafo Normal" aria-label="Párrafo">P</button>
+          <span class="sep"></span>
+
+          <button data-cmd="insertUnorderedList" type="button" title="Lista con viñetas" aria-label="Lista con viñetas"><span aria-hidden="true" style="font-size:18px;line-height:1">•</span></button>
+          <button data-cmd="insertOrderedList" type="button" title="Lista numerada" aria-label="Lista numerada"><span aria-hidden="true">1.</span></button>
+          <button data-block="blockquote" type="button" title="Bloque de cita" aria-label="Cita"><span aria-hidden="true">“ ”</span></button>
+          <button id="importantBtn" type="button" title="Insertar bloque Importante" aria-label="Marcar como importante"><b aria-hidden="true">!</b></button>
+          <button id="meetingBtn" type="button" title="Enviar selección a Reuniones internas (💬)" aria-label="Enviar a Reuniones">💬</button>
+          <span class="sep"></span>
+
+          <!-- Selector de Resaltador Pastel -->
+          <span class="highlight-wrap">
+            <button id="highlightBtn" class="highlight-btn" type="button" title="Resaltador pastel" aria-label="Resaltador pastel">
+              <span>🖍</span>
+              <span id="highlightSwatch" class="highlight-swatch"></span>
+            </button>
+            <span id="highlightMenu" class="highlight-menu"></span>
+          </span>
+
+          <button id="tableBtn" type="button" title="Insertar tabla" aria-label="Insertar tabla">▦</button>
+          <button id="codeBtn" type="button" title="Insertar bloque de código con resaltado de sintaxis" aria-label="Insertar código">&lt;/&gt;</button>
+          <button id="taskWidgetBtn" type="button" title="Insertar lista de tareas dinámica (Widget)" aria-label="Insertar widget de tareas">☑️</button>
+          
+          <label title="Insertar imagen local" aria-label="Insertar imagen">
+            🖼️<input id="imgInput" type="file" accept="image/*" hidden>
+          </label>
+          <button data-cmd="removeFormat" type="button" title="Limpiar formato" aria-label="Quitar formato">Tx</button>
+        </div>
+
+        <!-- Área de Edición de Texto Enriquecido -->
+        <article id="editor" class="editor" contenteditable="true" spellcheck="true" aria-label="Contenido de la nota"></article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Pantalla de Bloqueo / Vinculación de Carpeta de Datos -->
+  <div id="folderGate" class="folder-gate">
+    <div class="folder-card" role="dialog" aria-modal="true" aria-labelledby="folderGateTitle">
+      <div class="gate-icon">📁</div>
+      <h2 id="folderGateTitle">Vincula la carpeta de Pineapple Notes</h2>
+      <p>Selecciona la carpeta local que contiene <b>datos.json</b> y el directorio <b>images</b>. Los datos y recursos se guardarán directamente en tu disco local.</p>
+      <div class="gate-warning">La edición permanecerá protegida hasta vincular la carpeta para asegurar la integridad de tus datos locales.</div>
+      <button id="gateFolderBtn" type="button">Seleccionar Carpeta de Datos</button>
+    </div>
+  </div>
+
+  <!-- Menú Contextual de Opciones de Nota -->
+  <div id="menu" class="menu" role="menu">
+    <button data-a="sub" type="button" role="menuitem">↳ Crear subnota</button>
+    <button data-a="dup" type="button" role="menuitem">⧉ Duplicar</button>
+    <button data-a="fav" type="button" role="menuitem">⭐ Añadir a Favoritos</button>
+    <button data-a="up" type="button" role="menuitem">↑ Subir orden</button>
+    <button data-a="down" type="button" role="menuitem">↓ Bajar orden</button>
+    <hr>
+    <button data-a="del" class="danger" type="button" role="menuitem">🗑 Eliminar</button>
+  </div>
+
+  <!-- Barra Flotante de Redimensionamiento de Imágenes -->
+  <div id="imgbar" class="imgbar">
+    <button data-z="-10" type="button">−</button>
+    <span id="pct">100%</span>
+    <button data-z="10" type="button">＋</button>
+    <button data-z="reset" type="button">Original</button>
+  </div>
+
+  <!-- Modal Accesible Genérico -->
+  <div id="modalBg" class="modal-bg" role="dialog" aria-modal="true">
+    <div class="modal"></div>
+  </div>
+
+  <!-- Módulo Principal ES -->
+  <script type="module" src="src/js/app.js"></script>
+</body>
+</html>

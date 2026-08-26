@@ -1,0 +1,128 @@
+/* Meeting Help Banner */
+.meeting-help {
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  line-height: 1.55;
+  box-shadow: var(--shadow-sm);
+}
+
+.meeting-help b {
+  color: var(--text);
+}
+
+.meeting-filters {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.meeting-filters button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius-md);
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.meeting-filters button:hover {
+  background: var(--hover);
+}
+
+.meeting-filters button.active {
+  background: var(--active);
+  color: var(--active-text);
+  border-color: var(--focus);
+}
+
+/* Meeting Topic Items */
+.meeting-item {
+  margin: 0 0 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+.meeting-item.done {
+  opacity: 0.65;
+  border-left-color: var(--green);
+}
+
+.meeting-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 3px 8px;
+  background: var(--hover);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.meeting-text {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+.meeting-meta {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.meeting-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-subtle);
+}
+
+.meeting-actions button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 6px 11px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.meeting-actions button:hover {
+  background: var(--hover);
+}
+
+.meeting-actions .meeting-delete {
+  color: var(--red);
+}
+
+.meeting-actions .meeting-delete:hover {
+  background: var(--red-subtle);
+}
+
+.meeting-empty {
+  padding: 40px 20px;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
