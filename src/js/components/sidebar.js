@@ -1,12 +1,15 @@
 /**
- * Componente de Barra Lateral, Árbol de Páginas, Favoritos y Menú Contextual
+ * Componente de Barra Lateral: Bloque Tools, Widget de Cronómetro Activo,
+ * Favoritos Plegables, Árbol de Páginas y Menú Contextual
  */
 
+import { TOOL_PAGE_IDS, SPECIAL_PAGES } from '../config/constants.js';
 import { state } from '../core/state.js';
 import { fsService } from '../services/fsService.js';
+import { timeService } from '../services/timeService.js';
 import { $, esc, stripHtml } from '../utils/dom.js';
 import { showConfirmModal } from '../utils/modal.js';
-import { toastSuccess } from '../utils/toast.js';
+import { toastSuccess, toastWarning } from '../utils/toast.js';
 
 class SidebarComponent {
   constructor() {
@@ -14,13 +17,13 @@ class SidebarComponent {
     this.menuElement = $('menu');
     this.pagesContainer = $('pages');
     this.searchInput = $('search');
-    
+
     this.initEvents();
   }
 
   initEvents() {
     this.searchInput.addEventListener('input', () => this.renderTree());
-    
+
     // Cerrar menú al hacer clic fuera
     document.addEventListener('click', (e) => {
       if (this.menuElement && !this.menuElement.contains(e.target) && !e.target.classList.contains('more')) {
@@ -149,17 +152,18 @@ class SidebarComponent {
   async requestDelete(page) {
     const data = state.getData();
     if (data.pages.length === 1) {
-      alert('Debe existir al menos una nota.');
+      toastWarning('Debe existir al menos una nota.');
       return;
     }
 
     const idsToDelete = state.descendants(page.id);
     const count = idsToDelete.size;
-    const msg = count > 1
-      ? `Se eliminará "${page.title}" y sus ${count - 1} subnotas vinculadas. Esta acción no se puede deshacer.`
-      : `Se eliminará la nota "${page.title}". Esta acción no se puede deshacer.`;
+    const msg =
+      count > 1
+        ? `Se eliminará “${page.title}” y sus ${count - 1} subnotas. Esta acción no se puede deshacer.`
+        : `Se eliminará “${page.title}”. Esta acción no se puede deshacer.`;
 
-    const confirmed = await showConfirmModal('Eliminar nota', msg, 'Eliminar nota', true);
+    const confirmed = await showConfirmModal('Eliminar nota', msg, 'Eliminar', true);
     if (!confirmed) return;
 
     data.pages = data.pages.filter((x) => !idsToDelete.has(x.id));
@@ -177,7 +181,10 @@ class SidebarComponent {
     if (!query) return true;
     const haystack = `${page.title || ''} ${stripHtml(page.content || '')}`.toLowerCase();
     if (haystack.includes(query)) return true;
-    return state.getData().pages.filter((x) => x.parentId === page.id).some((x) => this.pageMatchesSearch(x, query));
+    return state
+      .getData()
+      .pages.filter((x) => x.parentId === page.id)
+      .some((x) => this.pageMatchesSearch(x, query));
   }
 
   renderTree() {
@@ -187,22 +194,28 @@ class SidebarComponent {
 
     const data = state.getData();
     const activePage = state.getActivePage();
+    const systemIds = new Set(TOOL_PAGE_IDS);
+
     const rootPages = data.pages
-      .filter((p) => !p.parentId || !data.pages.some((x) => x.id === p.parentId))
+      .filter((p) => !systemIds.has(p.id) && (!p.parentId || !data.pages.some((x) => x.id === p.parentId)))
       .sort((a, b) => a.order - b.order);
 
     this.pagesContainer.innerHTML = '';
 
     const makeRow = (p, depth, context = 'normal') => {
       const children = data.pages
-        .filter((x) => x.parentId === p.id)
+        .filter((x) => x.parentId === p.id && !systemIds.has(x.id))
         .sort((a, b) => a.order - b.order);
       const hasChildren = children.length > 0;
       const stateId = context === 'favorite' ? `fav:${p.id}` : p.id;
       const isOpen = query ? true : state.isExpanded(stateId);
 
       const row = document.createElement('div');
-      row.className = `nav depth-${Math.min(depth, 3)}${p.id === activePage?.id ? ' active' : ''}${context === 'favorite' ? ' favorite-nav' : ''}`;
+      row.className =
+        `nav depth-${Math.min(depth, 3)}` +
+        (p.id === activePage?.id ? ' active' : '') +
+        (context === 'favorite' ? ' favorite-nav' : '') +
+        (context === 'tool' ? ' tool-nav' : '');
       row.draggable = context === 'normal';
 
       row.innerHTML = `
@@ -230,7 +243,6 @@ class SidebarComponent {
         }
       };
 
-      // Drag and drop para reordenación
       if (context === 'normal') {
         row.ondragstart = (e) => {
           row.classList.add('dragging');
@@ -247,7 +259,11 @@ class SidebarComponent {
           row.classList.remove('over');
           const draggedId = e.dataTransfer.getData('text/plain');
           const draggedPage = data.pages.find((x) => x.id === draggedId);
-          if (!draggedPage || draggedPage.id === p.id || (draggedPage.parentId || null) !== (p.parentId || null)) {
+          if (
+            !draggedPage ||
+            draggedPage.id === p.id ||
+            (draggedPage.parentId || null) !== (p.parentId || null)
+          ) {
             return;
           }
           const siblings = state.siblings(p).filter((x) => x.id !== draggedPage.id);
@@ -272,27 +288,62 @@ class SidebarComponent {
       }
     };
 
-    // Sección de Favoritos
-    const favBlock = document.createElement('div');
-    favBlock.className = 'favorites-block';
-    favBlock.innerHTML = '<div class="label">⭐ Favoritos</div>';
-    this.pagesContainer.appendChild(favBlock);
+    // 1. Bloque Tools (Tareas, Temas Pendientes, Registro de tiempo)
+    const toolsBlock = document.createElement('div');
+    toolsBlock.className = 'tools-block';
+    toolsBlock.innerHTML = '<div class="label">Tools</div>';
+    this.pagesContainer.appendChild(toolsBlock);
 
+    TOOL_PAGE_IDS.map((id) => data.pages.find((p) => p.id === id))
+      .filter(Boolean)
+      .forEach((p) => {
+        toolsBlock.appendChild(makeRow(p, 0, 'tool').row);
+      });
+
+    // 2. Widget Flotante de Cronómetro Activo en Sidebar
+    const timerWidget = document.createElement('div');
+    timerWidget.id = 'activeTimerWidget';
+    timerWidget.className = 'active-timer-widget' + (data.timeTimer ? '' : ' hidden');
+    timerWidget.innerHTML = data.timeTimer
+      ? `<div class="active-timer-title">⏱️ ${esc(data.timeTimer.activity || 'Actividad')}</div>
+         <div class="active-timer-clock">${timeService.formatClock(timeService.timerElapsedMs())}</div>`
+      : '';
+    timerWidget.onclick = () => state.setActivePageId(SPECIAL_PAGES.TIME_ID);
+    this.pagesContainer.appendChild(timerWidget);
+
+    // 3. Sección de Favoritos Plegable
     const favorites = (data.favorites || [])
       .map((id) => data.pages.find((p) => p.id === id))
-      .filter(Boolean)
+      .filter((p) => p && !systemIds.has(p.id))
       .filter((p) => this.pageMatchesSearch(p, query));
 
+    const favCollapsed = state.isFavoritesCollapsed();
+    const favWrap = document.createElement('div');
+    favWrap.className = 'favorites-block';
+    favWrap.innerHTML = `
+      <div class="favorites-heading">
+        <span class="favorites-chevron">${favCollapsed ? '›' : '⌄'}</span>
+        <span>Favoritos</span>
+        <span class="favorites-count">${favorites.length}</span>
+      </div>
+      <div class="favorites-content${favCollapsed ? ' collapsed' : ''}"></div>
+    `;
+    this.pagesContainer.appendChild(favWrap);
+
+    favWrap.querySelector('.favorites-heading').onclick = () => {
+      state.toggleFavoritesCollapsed();
+      this.renderTree();
+    };
+
+    const favContent = favWrap.querySelector('.favorites-content');
     if (favorites.length) {
-      favorites.forEach((p) => addRecursive(p, 0, 'favorite', favBlock));
+      favorites.forEach((p) => addRecursive(p, 0, 'favorite', favContent));
     } else {
-      favBlock.insertAdjacentHTML(
-        'beforeend',
-        '<div class="favorite-empty">Usa el botón ☆ junto al título o el menú ••• para anclar notas.</div>'
-      );
+      favContent.innerHTML =
+        '<div class="favorite-empty">Usa ☆ junto al título o el menú ••• para añadir notas y carpetas.</div>';
     }
 
-    // Sección principal de Notas
+    // 4. Sección principal de Notas
     this.pagesContainer.insertAdjacentHTML('beforeend', '<div class="label">Notas</div>');
     rootPages.forEach((p) => addRecursive(p, 0, 'normal', this.pagesContainer));
   }
