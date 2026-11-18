@@ -1,0 +1,41 @@
+{
+  "version": 7,
+  "activeId": "welcome",
+  "pages": [
+    {
+      "id": "welcome",
+      "title": "Bienvenido a Pineapple Notes",
+      "icon": "📝",
+      "parentId": null,
+      "order": 0,
+      "content": "<h2>Tu espacio de notas</h2><p>Crea notas, subnotas, listas, resaltados y bloques de código.</p>",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "meetingItems": [],
+  "favorites": [],
+  "taskItems": [],
+  "mailStates": {},
+  "mailItems": [],
+  "topicItems": [],
+  "timeEntries": [],
+  "timeTimer": null,
+  "timeSettings": {
+    "rounding": "minute",
+    "idleReminderMinutes": 90,
+    "remindersEnabled": false,
+    "categories": [
+      "Interno",
+      "Cliente",
+      "Formación",
+      "Soporte",
+      "Reunión",
+      "Administrativo",
+      "Otro"
+    ],
+    "projects": [
+      "Pineapple Notes"
+    ]
+  }
+}
