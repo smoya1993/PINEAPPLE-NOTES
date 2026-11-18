@@ -2,19 +2,30 @@
  * Gestor de Estado Centralizado y Reactivo con Sistema Pub/Sub
  */
 
-import { STORAGE_KEYS, SPECIAL_PAGES, INITIAL_DATA } from '../config/constants.js';
+import {
+  STORAGE_KEYS,
+  SPECIAL_PAGES,
+  TOOL_PAGE_IDS,
+  READONLY_SPECIAL_PAGE_IDS,
+  DEFAULT_TIME_SETTINGS,
+  INITIAL_DATA
+} from '../config/constants.js';
 
 class StateStore {
   constructor() {
     this.subscribers = new Set();
     this.expandedPages = this.loadExpandedPages();
+    this.favoritesCollapsed = localStorage.getItem(STORAGE_KEYS.FAVORITES_COLLAPSED) === '1';
     this.data = this.loadInitialData();
     this.normalize();
   }
 
   loadInitialData() {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.DATA) || localStorage.getItem(STORAGE_KEYS.LEGACY_DATA);
+      const stored =
+        localStorage.getItem(STORAGE_KEYS.DATA) ||
+        localStorage.getItem(STORAGE_KEYS.ENTERPRISE_DATA) ||
+        localStorage.getItem(STORAGE_KEYS.LEGACY_DATA);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && Array.isArray(parsed.pages) && parsed.pages.length) {
@@ -29,7 +40,10 @@ class StateStore {
 
   loadExpandedPages() {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.EXPANDED) || localStorage.getItem(STORAGE_KEYS.LEGACY_EXPANDED);
+      const stored =
+        localStorage.getItem(STORAGE_KEYS.EXPANDED) ||
+        localStorage.getItem(STORAGE_KEYS.ENTERPRISE_EXPANDED) ||
+        localStorage.getItem(STORAGE_KEYS.LEGACY_EXPANDED);
       return new Set(JSON.parse(stored) || []);
     } catch {
       return new Set();
@@ -56,6 +70,18 @@ class StateStore {
     }
     this.saveExpandedPages();
     this.notify('tree_toggle', { key });
+  }
+
+  isFavoritesCollapsed() {
+    return this.favoritesCollapsed;
+  }
+
+  toggleFavoritesCollapsed() {
+    this.favoritesCollapsed = !this.favoritesCollapsed;
+    try {
+      localStorage.setItem(STORAGE_KEYS.FAVORITES_COLLAPSED, this.favoritesCollapsed ? '1' : '0');
+    } catch {}
+    this.notify('tree_toggle', { key: 'favorites' });
   }
 
   expandActivePath() {
@@ -104,14 +130,33 @@ class StateStore {
     }
   }
 
+  isToolPage(id) {
+    return TOOL_PAGE_IDS.includes(id);
+  }
+
+  isReadonlySpecialPage(id) {
+    return READONLY_SPECIAL_PAGE_IDS.includes(id);
+  }
+
+  getPageBreadcrumbPath(page) {
+    const names = [];
+    let p = page;
+    while (p) {
+      names.unshift(p.title || 'Sin título');
+      p = this.data.pages.find((x) => x.id === p.parentId);
+    }
+    return names.join(' › ');
+  }
+
   nextOrder(parentId) {
     const siblings = this.data.pages.filter((x) => (x.parentId || null) === (parentId || null));
     return siblings.length ? Math.max(...siblings.map((x) => x.order)) + 1 : 0;
   }
 
   siblings(page) {
+    const toolIds = new Set(TOOL_PAGE_IDS);
     return this.data.pages
-      .filter((x) => (x.parentId || null) === (page.parentId || null))
+      .filter((x) => !toolIds.has(x.id) && (x.parentId || null) === (page.parentId || null))
       .sort((a, b) => a.order - b.order);
   }
 
@@ -137,7 +182,7 @@ class StateStore {
   toggleFavorite(pageId) {
     if (!pageId || pageId === 'favoritos') return false;
     if (!Array.isArray(this.data.favorites)) this.data.favorites = [];
-    
+
     if (this.isFavorite(pageId)) {
       this.data.favorites = this.data.favorites.filter((id) => id !== pageId);
     } else {
@@ -145,6 +190,132 @@ class StateStore {
     }
     this.notify('favorites_changed', { pageId });
     return true;
+  }
+
+  ensureTimeStructure() {
+    if (!Array.isArray(this.data.timeEntries)) this.data.timeEntries = [];
+    if (!this.data.timeTimer || typeof this.data.timeTimer !== 'object') this.data.timeTimer = null;
+    if (!this.data.timeSettings || typeof this.data.timeSettings !== 'object') {
+      this.data.timeSettings = structuredClone(DEFAULT_TIME_SETTINGS);
+    } else {
+      this.data.timeSettings = {
+        ...structuredClone(DEFAULT_TIME_SETTINGS),
+        ...this.data.timeSettings,
+        categories: Array.isArray(this.data.timeSettings.categories)
+          ? this.data.timeSettings.categories
+          : structuredClone(DEFAULT_TIME_SETTINGS.categories),
+        projects: Array.isArray(this.data.timeSettings.projects)
+          ? this.data.timeSettings.projects
+          : structuredClone(DEFAULT_TIME_SETTINGS.projects)
+      };
+    }
+
+    let p = this.data.pages.find((x) => x.id === SPECIAL_PAGES.TIME_ID);
+    if (!p) {
+      const now = Date.now();
+      p = {
+        id: SPECIAL_PAGES.TIME_ID,
+        title: 'Registro de tiempo',
+        icon: '⏱️',
+        parentId: null,
+        order: this.nextOrder(null),
+        content: '<p>Registro de tiempo.</p>',
+        createdAt: now,
+        updatedAt: now
+      };
+      this.data.pages.push(p);
+    } else {
+      p.title = 'Registro de tiempo';
+      p.icon = '⏱️';
+      p.parentId = null;
+    }
+  }
+
+  ensureTopicStructure() {
+    if (!Array.isArray(this.data.topicItems)) this.data.topicItems = [];
+    let p = this.data.pages.find((x) => x.id === SPECIAL_PAGES.TOPICS_ID);
+    if (!p) {
+      const now = Date.now();
+      p = {
+        id: SPECIAL_PAGES.TOPICS_ID,
+        title: 'Temas Pendientes',
+        icon: '👁️',
+        parentId: null,
+        order: this.nextOrder(null),
+        content: '<p>Temas pendientes centralizados.</p>',
+        createdAt: now,
+        updatedAt: now
+      };
+      this.data.pages.push(p);
+    } else {
+      p.title = 'Temas Pendientes';
+      p.icon = '👁️';
+      p.parentId = null;
+    }
+  }
+
+  ensureTaskStructure() {
+    if (!Array.isArray(this.data.taskItems)) this.data.taskItems = [];
+
+    // Migrar 'tareas-raul' legacy a 'tareas' si existe
+    const legacyTaskPage = this.data.pages.find((x) => x.id === SPECIAL_PAGES.LEGACY_TASKS_ID);
+    const currentTaskPage = this.data.pages.find((x) => x.id === SPECIAL_PAGES.TASKS_ID);
+
+    if (legacyTaskPage && !currentTaskPage) {
+      legacyTaskPage.id = SPECIAL_PAGES.TASKS_ID;
+      if (this.data.activeId === SPECIAL_PAGES.LEGACY_TASKS_ID) {
+        this.data.activeId = SPECIAL_PAGES.TASKS_ID;
+      }
+    } else if (legacyTaskPage && currentTaskPage) {
+      this.data.pages = this.data.pages.filter((x) => x.id !== SPECIAL_PAGES.LEGACY_TASKS_ID);
+      if (this.data.activeId === SPECIAL_PAGES.LEGACY_TASKS_ID) {
+        this.data.activeId = SPECIAL_PAGES.TASKS_ID;
+      }
+    }
+
+    let p = this.data.pages.find((x) => x.id === SPECIAL_PAGES.TASKS_ID);
+    if (!p) {
+      const now = Date.now();
+      p = {
+        id: SPECIAL_PAGES.TASKS_ID,
+        title: 'Tareas',
+        icon: '✅',
+        parentId: null,
+        order: this.nextOrder(null),
+        content: '<p>Gestor personal de tareas.</p>',
+        createdAt: now,
+        updatedAt: now
+      };
+      this.data.pages.push(p);
+    } else {
+      p.title = 'Tareas';
+      p.icon = '✅';
+      p.parentId = null;
+    }
+  }
+
+  ensureMailStructure() {
+    if (!Array.isArray(this.data.mailItems)) this.data.mailItems = [];
+    if (!this.data.mailStates || typeof this.data.mailStates !== 'object') this.data.mailStates = {};
+
+    let p = this.data.pages.find((x) => x.id === SPECIAL_PAGES.MAIL_ID);
+    if (!p) {
+      const now = Date.now();
+      p = {
+        id: SPECIAL_PAGES.MAIL_ID,
+        title: 'Correos marcados WAF',
+        icon: '📧',
+        parentId: null,
+        order: this.nextOrder(null),
+        content: '<p>Correos importados desde la carpeta inbox.</p>',
+        createdAt: now,
+        updatedAt: now
+      };
+      this.data.pages.push(p);
+    } else {
+      p.title = 'Correos marcados WAF';
+      p.icon = '📧';
+    }
   }
 
   ensureMeetingStructure() {
@@ -204,44 +375,19 @@ class StateStore {
     }
   }
 
-  ensureTasksStructure() {
-    const now = Date.now();
-    let page = this.data.pages.find((p) => p.id === SPECIAL_PAGES.TASKS_ID);
-    let home = this.data.pages.find((p) => p.id === 'inicio');
-
-    if (!page) {
-      this.data.pages
-        .filter((p) => p.parentId === null && p.order >= 1)
-        .forEach((p) => p.order++);
-
-      page = {
-        id: SPECIAL_PAGES.TASKS_ID,
-        title: 'Tareas Raúl',
-        icon: '✅',
-        parentId: null,
-        order: home ? 1 : 0,
-        content: '<p>Gestor personal de tareas.</p>',
-        createdAt: now,
-        updatedAt: now
-      };
-      this.data.pages.push(page);
-    } else {
-      page.title = 'Tareas Raúl';
-      page.icon = '✅';
-      page.parentId = null;
-    }
-  }
-
   normalize() {
+    this.ensureTimeStructure();
+    this.ensureTopicStructure();
+    this.ensureTaskStructure();
+    this.ensureMailStructure();
+
     if (!Array.isArray(this.data.meetingItems)) this.data.meetingItems = [];
-    if (!Array.isArray(this.data.taskItems)) this.data.taskItems = [];
-    this.ensureTasksStructure();
-    
     if (!Array.isArray(this.data.favorites)) this.data.favorites = [];
-    this.data.favorites = [...new Set(this.data.favorites)].filter((id) =>
-      this.data.pages.some((p) => p.id === id)
+    const toolIds = new Set(TOOL_PAGE_IDS);
+    this.data.favorites = [...new Set(this.data.favorites)].filter(
+      (id) => !toolIds.has(id) && this.data.pages.some((p) => p.id === id)
     );
-    
+
     this.ensureMeetingStructure();
 
     // Reordenar páginas para garantizar secuencias válidas por nivel

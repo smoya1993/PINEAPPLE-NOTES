@@ -1,17 +1,20 @@
 /**
  * Servicio del Sistema de Archivos Local (File System Access API + IndexedDB)
+ * Soporta datos.json, images/, inbox/ y processed/
  */
 
 import { INDEXED_DB, STORAGE_KEYS, INITIAL_DATA } from '../config/constants.js';
 import { state } from '../core/state.js';
-import { $, formatDate } from '../utils/dom.js';
-import { toastSuccess, toastError, toastInfo } from '../utils/toast.js';
+import { $ } from '../utils/dom.js';
+import { toastSuccess, toastError } from '../utils/toast.js';
 
 class FileSystemService {
   constructor() {
     this.rootDirHandle = null;
     this.dataHandle = null;
     this.imagesDirHandle = null;
+    this.inboxDirHandle = null;
+    this.processedDirHandle = null;
     this.saveTimer = null;
   }
 
@@ -19,9 +22,9 @@ class FileSystemService {
     return !!this.dataHandle;
   }
 
-  async openDatabase() {
+  async openDatabase(dbName = INDEXED_DB.DB_NAME) {
     return new Promise((resolve, reject) => {
-      const req = indexedDB.open(INDEXED_DB.DB_NAME, INDEXED_DB.VERSION);
+      const req = indexedDB.open(dbName, INDEXED_DB.VERSION);
       req.onupgradeneeded = () => {
         if (!req.result.objectStoreNames.contains(INDEXED_DB.STORE_NAME)) {
           req.result.createObjectStore(INDEXED_DB.STORE_NAME);
@@ -34,7 +37,7 @@ class FileSystemService {
 
   async rememberFolder(handle) {
     try {
-      const db = await this.openDatabase();
+      const db = await this.openDatabase(INDEXED_DB.DB_NAME);
       await new Promise((resolve, reject) => {
         const tx = db.transaction(INDEXED_DB.STORE_NAME, 'readwrite');
         tx.objectStore(INDEXED_DB.STORE_NAME).put(handle, INDEXED_DB.KEY);
@@ -47,9 +50,9 @@ class FileSystemService {
     }
   }
 
-  async recallFolder() {
+  async recallFolderFromDb(dbName) {
     try {
-      const db = await this.openDatabase();
+      const db = await this.openDatabase(dbName);
       const handle = await new Promise((resolve, reject) => {
         const tx = db.transaction(INDEXED_DB.STORE_NAME, 'readonly');
         const req = tx.objectStore(INDEXED_DB.STORE_NAME).get(INDEXED_DB.KEY);
@@ -58,14 +61,23 @@ class FileSystemService {
       });
       db.close();
       return handle;
-    } catch (e) {
-      console.warn('No se pudo recuperar la carpeta de IndexedDB:', e);
+    } catch {
       return null;
     }
   }
 
+  async recallFolder() {
+    const primary = await this.recallFolderFromDb(INDEXED_DB.DB_NAME);
+    if (primary) return primary;
+    const enterprise = await this.recallFolderFromDb(INDEXED_DB.ENTERPRISE_DB_NAME);
+    if (enterprise) return enterprise;
+    return await this.recallFolderFromDb(INDEXED_DB.LEGACY_DB_NAME);
+  }
+
   async connectFolder(directoryHandle) {
     const imagesHandle = await directoryHandle.getDirectoryHandle('images', { create: true });
+    const inboxHandle = await directoryHandle.getDirectoryHandle('inbox', { create: true });
+    const processedHandle = await directoryHandle.getDirectoryHandle('processed', { create: true });
     const dataFileHandle = await directoryHandle.getFileHandle('datos.json', { create: true });
 
     const file = await dataFileHandle.getFile();
@@ -75,7 +87,7 @@ class FileSystemService {
     if (text.trim()) {
       try {
         loadedData = JSON.parse(text);
-      } catch (err) {
+      } catch {
         throw new Error('datos.json contiene JSON no válido. El archivo no se ha sobrescrito.');
       }
 
@@ -90,6 +102,8 @@ class FileSystemService {
 
     this.rootDirHandle = directoryHandle;
     this.imagesDirHandle = imagesHandle;
+    this.inboxDirHandle = inboxHandle;
+    this.processedDirHandle = processedHandle;
     this.dataHandle = dataFileHandle;
 
     state.setData(loadedData, 'folder_connected');
@@ -101,13 +115,13 @@ class FileSystemService {
     const status = $('status');
 
     if (conn) conn.classList.add('visible');
-    if (connText) connText.textContent = `${this.rootDirHandle.name} · disco vinculado`;
+    if (connText) connText.textContent = `${this.rootDirHandle.name} · datos, imágenes y correo`;
     if (gate) {
       gate.classList.add('hidden');
       gate.classList.remove('restoring');
     }
 
-    if (!text.trim()) {
+    if (!text.trim() || !state.getData().pages.length) {
       await this.writeFile();
     } else if (status) {
       status.textContent = 'Cargado desde datos.json';
@@ -146,7 +160,7 @@ class FileSystemService {
 
   async selectFolderPrompt() {
     if (!window.showDirectoryPicker) {
-      toastError('El navegador no soporta File System Access API. Usa Edge o Chrome actualizado.');
+      toastError('Esta función necesita Microsoft Edge o Google Chrome actualizado.');
       return;
     }
 
@@ -154,12 +168,12 @@ class FileSystemService {
     triggerButtons.forEach((b) => {
       b.disabled = true;
       b.dataset.oldText = b.textContent;
-      b.textContent = 'Abriendo...';
+      b.textContent = 'Abriendo…';
     });
 
     try {
       const selected = await window.showDirectoryPicker({
-        id: 'pineapple-notes-root',
+        id: 'pineapple-notes-shared-root',
         mode: 'readwrite'
       });
 
@@ -172,14 +186,14 @@ class FileSystemService {
       }
 
       if (permission !== 'granted') {
-        throw new Error('No se concedió permiso de lectura y escritura en la carpeta seleccionada.');
+        throw new Error('No se concedió permiso de lectura y escritura.');
       }
 
       await this.rememberFolder(selected);
       await this.connectFolder(selected);
     } catch (e) {
       if (e.name !== 'AbortError') {
-        toastError(`Error al abrir carpeta: ${e.message || e}`);
+        toastError(`No se pudo cargar la carpeta: ${e.message || e}`);
       }
     } finally {
       triggerButtons.forEach((b) => {
@@ -196,7 +210,7 @@ class FileSystemService {
       await writable.write(JSON.stringify(state.getData(), null, 2));
       await writable.close();
       const status = $('status');
-      if (status) status.textContent = `Guardado (${new Date().toLocaleTimeString()})`;
+      if (status) status.textContent = 'Guardado en datos.json';
     } catch (err) {
       console.error('Error escribiendo datos.json', err);
       const status = $('status');
@@ -206,18 +220,19 @@ class FileSystemService {
   }
 
   scheduleSave() {
-    // Respaldo en localStorage de forma síncrona
     try {
-      localStorage.setItem(STORAGE_KEYS.DATA, JSON.stringify(state.getData()));
+      const serialized = JSON.stringify(state.getData());
+      localStorage.setItem(STORAGE_KEYS.DATA, serialized);
+      localStorage.setItem(STORAGE_KEYS.ENTERPRISE_DATA, serialized);
     } catch {}
 
     const status = $('status');
     if (this.dataHandle) {
-      if (status) status.textContent = 'Guardando en disco...';
+      if (status) status.textContent = 'Guardando...';
       clearTimeout(this.saveTimer);
       this.saveTimer = setTimeout(() => this.writeFile(), 250);
     } else if (status) {
-      status.textContent = 'Modo local (sin carpeta)';
+      status.textContent = 'Sin carpeta vinculada';
     }
   }
 
@@ -230,7 +245,7 @@ class FileSystemService {
 
   async saveImage(file) {
     if (!this.imagesDirHandle) {
-      throw new Error('Primero debes abrir o vincular la carpeta de datos.');
+      throw new Error('Primero abre la carpeta.');
     }
 
     const filename = this.generateImageName(file);

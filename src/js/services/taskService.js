@@ -11,17 +11,21 @@ class TaskService {
     return state.getData().taskItems || [];
   }
 
+  isCompleted(task) {
+    return task.status === 'completed' || task.status === 'done';
+  }
+
   getMetrics() {
     const all = this.getTasks();
-    const pending = all.filter((x) => x.status !== 'done');
-    const done = all.filter((x) => x.status === 'done');
+    const pending = all.filter((x) => !this.isCompleted(x));
+    const completed = all.filter((x) => this.isCompleted(x));
     const today = new Date().toISOString().slice(0, 10);
     const overdue = pending.filter((x) => x.dueDate && x.dueDate < today);
 
     return {
       total: all.length,
       pendingCount: pending.length,
-      doneCount: done.length,
+      doneCount: completed.length,
       overdueCount: overdue.length
     };
   }
@@ -29,7 +33,7 @@ class TaskService {
   addTask({ title, details = '', priority = 'normal', dueDate = '' }) {
     const cleanTitle = title?.trim();
     if (!cleanTitle) {
-      toastWarning('El título de la tarea no puede estar vacío');
+      toastWarning('Escribe el título de la tarea.');
       return null;
     }
 
@@ -38,6 +42,7 @@ class TaskService {
       id: 'task_' + now.toString(36) + Math.random().toString(36).slice(2, 8),
       title: cleanTitle,
       details: details?.trim() || '',
+      comment: '',
       priority: ['high', 'normal', 'low'].includes(priority) ? priority : 'normal',
       dueDate: dueDate || '',
       status: 'pending',
@@ -50,7 +55,7 @@ class TaskService {
     data.taskItems.push(newTask);
     fsService.scheduleSave();
     state.notify('task_added', { task: newTask });
-    toastSuccess('Tarea añadida con éxito');
+    toastSuccess('Tarea añadida');
     return newTask;
   }
 
@@ -59,12 +64,23 @@ class TaskService {
     const task = data.taskItems.find((t) => t.id === taskId);
     if (!task) return;
 
-    task.status = task.status === 'done' ? 'pending' : 'done';
-    task.completedAt = task.status === 'done' ? Date.now() : null;
+    const completed = !this.isCompleted(task);
+    task.status = completed ? 'completed' : 'pending';
+    task.completedAt = completed ? Date.now() : null;
     task.updatedAt = Date.now();
 
     fsService.scheduleSave();
     state.notify('task_updated', { task });
+  }
+
+  updateTaskComment(taskId, comment) {
+    const data = state.getData();
+    const task = data.taskItems.find((t) => t.id === taskId);
+    if (!task) return;
+
+    task.comment = comment;
+    task.updatedAt = Date.now();
+    fsService.scheduleSave();
   }
 
   updateTask(taskId, { title, details, priority, dueDate }) {

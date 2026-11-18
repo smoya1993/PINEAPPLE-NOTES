@@ -3,23 +3,47 @@
  */
 
 export const STORAGE_KEYS = {
-  DATA: 'pineappleNotesV1',
+  DATA: 'pineappleNotesSharedV1',
+  ENTERPRISE_DATA: 'pineappleNotesV1',
   LEGACY_DATA: 'pinaNotesV6',
-  THEME: 'pineappleNotesTheme',
+  THEME: 'pineappleNotesSharedTheme',
+  ENTERPRISE_THEME: 'pineappleNotesTheme',
   LEGACY_THEME: 'pinaNotesTheme',
-  SCALE: 'pineappleNotesScale',
+  SCALE: 'pineappleNotesSharedScale',
+  ENTERPRISE_SCALE: 'pineappleNotesScale',
   LEGACY_SCALE: 'pinaNotesScale',
-  EXPANDED: 'pineappleNotesExpanded',
-  LEGACY_EXPANDED: 'pinaNotesExpanded'
+  EXPANDED: 'pineappleNotesSharedExpanded',
+  ENTERPRISE_EXPANDED: 'pineappleNotesExpanded',
+  LEGACY_EXPANDED: 'pinaNotesExpanded',
+  FAVORITES_COLLAPSED: 'pineappleSharedFavoritesCollapsed'
 };
 
 export const SPECIAL_PAGES = {
   MEETINGS_ID: 'reuniones-internas-cosas-comentar',
-  TASKS_ID: 'tareas-raul'
+  TASKS_ID: 'tareas',
+  LEGACY_TASKS_ID: 'tareas-raul',
+  TOPICS_ID: 'temas-pendientes',
+  TIME_ID: 'registro-tiempo',
+  MAIL_ID: 'correos-marcados'
 };
 
+export const TOOL_PAGE_IDS = [
+  SPECIAL_PAGES.TASKS_ID,
+  SPECIAL_PAGES.TOPICS_ID,
+  SPECIAL_PAGES.TIME_ID
+];
+
+export const READONLY_SPECIAL_PAGE_IDS = [
+  SPECIAL_PAGES.MEETINGS_ID,
+  SPECIAL_PAGES.MAIL_ID,
+  SPECIAL_PAGES.TASKS_ID,
+  SPECIAL_PAGES.TOPICS_ID,
+  SPECIAL_PAGES.TIME_ID
+];
+
 export const INDEXED_DB = {
-  DB_NAME: 'pineappleNotesHandles',
+  DB_NAME: 'pineappleNotesSharedHandles',
+  ENTERPRISE_DB_NAME: 'pineappleNotesHandles',
   LEGACY_DB_NAME: 'pinaNotesHandles',
   STORE_NAME: 'handles',
   KEY: 'root',
@@ -48,18 +72,6 @@ export const CODE_LANGUAGES = {
     label: 'Python',
     keywords: 'def return if elif else for while class import from as try except raise with lambda True False None and or not in is async await pass yield global nonlocal'
   },
-  sql: {
-    label: 'SQL',
-    keywords: 'SELECT FROM WHERE JOIN ON INSERT INTO UPDATE DELETE CREATE TABLE ALTER DROP GROUP BY ORDER HAVING AS AND OR NULL VALUES SET LIMIT OFFSET UNION INNER LEFT RIGHT'
-  },
-  bash: {
-    label: 'Bash',
-    keywords: 'if then else elif fi for do done case esac function in echo exit return set source export alias local read'
-  },
-  json: {
-    label: 'JSON',
-    keywords: 'true false null'
-  },
   html: {
     label: 'HTML',
     keywords: ''
@@ -68,10 +80,45 @@ export const CODE_LANGUAGES = {
     label: 'CSS',
     keywords: ''
   },
+  json: {
+    label: 'JSON',
+    keywords: 'true false null'
+  },
+  sql: {
+    label: 'SQL',
+    keywords: 'SELECT FROM WHERE JOIN ON INSERT INTO UPDATE DELETE CREATE TABLE ALTER DROP GROUP BY ORDER HAVING AS AND OR NULL VALUES SET LIMIT OFFSET UNION INNER LEFT RIGHT'
+  },
+  bash: {
+    label: 'Bash',
+    keywords: 'if then else elif fi for do done case esac function in echo exit return set source export alias local read'
+  },
   text: {
     label: 'Texto',
     keywords: ''
   }
+};
+
+export const DEFAULT_TIME_SETTINGS = {
+  rounding: 'minute',
+  idleReminderMinutes: 90,
+  remindersEnabled: false,
+  categories: [
+    'Interno',
+    'Cliente',
+    'Formación',
+    'Soporte',
+    'Reunión',
+    'Administrativo',
+    'Otro'
+  ],
+  projects: [
+    'Pineapple Notes',
+    'Forti',
+    'Akamai',
+    'Azure',
+    'Correos',
+    'Reuniones internas'
+  ]
 };
 
 export const INITIAL_DATA = {
@@ -84,12 +131,18 @@ export const INITIAL_DATA = {
       icon: '📝',
       parentId: null,
       order: 0,
-      content: '<h2>Tu espacio de notas empresarial</h2><p>Crea notas, subnotas, listas, tablas, widgets de tareas, resaltados pastel y bloques de código interactivos.</p><p>Los datos se guardan de forma local en tu disco con total privacidad y soberanía.</p>',
+      content: '<h2>Tu espacio de notas</h2><p>Crea notas, subnotas, listas, resaltados y bloques de código.</p>',
       createdAt: Date.now(),
       updatedAt: Date.now()
     }
   ],
-  meetingItems: [],
+  timeEntries: [],
+  timeTimer: null,
+  timeSettings: structuredClone(DEFAULT_TIME_SETTINGS),
+  topicItems: [],
   taskItems: [],
+  mailItems: [],
+  mailStates: {},
+  meetingItems: [],
   favorites: []
 };
