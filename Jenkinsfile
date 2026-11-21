@@ -19,7 +19,7 @@ pipeline {
     stage('Deploy') {
       steps {
         withCredentials([
-          string(credentialsId: 'DATABASE_URL', variable: 'DATABASE_URL'),
+          string(credentialsId: 'PINEAPPLE_DATABASE_URL', variable: 'DATABASE_URL'),
           string(credentialsId: 'PINEAPPLE_ACCESS_TOKEN_SECRET', variable: 'ACCESS_TOKEN_SECRET'),
           string(credentialsId: 'PINEAPPLE_REFRESH_TOKEN_SECRET', variable: 'REFRESH_TOKEN_SECRET'),
           // Si prefieres usar formato JDBC + usuario/contraseña en lugar de DATABASE_URL, descomenta estas 3 líneas:
