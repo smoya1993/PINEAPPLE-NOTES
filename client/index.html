@@ -55,7 +55,10 @@
 
       <!-- Acciones de Almacenamiento -->
       <div class="footer">
-        <button id="folder" type="button" title="Abrir carpeta local">📁 Carpeta</button>
+        <label class="footer-file-btn" title="Importar respaldo datos.json a PostgreSQL">
+          📥 Importar JSON
+          <input id="importJsonInput" type="file" accept="application/json,.json" hidden>
+        </label>
         <button id="export" type="button" title="Descargar copia JSON de respaldo">💾 Backup JSON</button>
         <button id="exportMd" type="button" title="Exportar la nota actual a formato Markdown">📝 Markdown</button>
         <button id="exportPdf" type="button" title="Exportar la nota actual a documento PDF">📄 PDF</button>
@@ -69,11 +72,12 @@
           <span id="crumb" class="crumb"></span>
         </div>
         <div class="top-right">
-          <span id="connection" class="connection" title="Carpeta de datos vinculada">
+          <span id="connection" class="connection" title="Conectado a PostgreSQL">
             <span class="connection-dot"></span>
             <span id="connectionText"></span>
           </span>
-          <span id="status" class="status">Sin carpeta</span>
+          <span id="status" class="status">Comprobando sesión...</span>
+          <button id="logoutBtn" class="logout-btn" type="button" title="Cerrar sesión" hidden>Salir</button>
         </div>
       </header>
 
@@ -130,14 +134,38 @@
     </main>
   </div>
 
-  <!-- Pantalla de Bloqueo / Vinculación de Carpeta de Datos -->
-  <div id="folderGate" class="folder-gate">
-    <div class="folder-card" role="dialog" aria-modal="true" aria-labelledby="folderGateTitle">
-      <div class="gate-icon">📁</div>
-      <h2 id="folderGateTitle">Vincula la carpeta de Pineapple Notes</h2>
-      <p>Selecciona la carpeta local que contiene <b>datos.json</b> y el directorio <b>images</b>. Los datos y recursos se guardarán directamente en tu disco local.</p>
-      <div class="gate-warning">La edición permanecerá protegida hasta vincular la carpeta para asegurar la integridad de tus datos locales.</div>
-      <button id="gateFolderBtn" type="button">Seleccionar Carpeta de Datos</button>
+  <!-- Pantalla de Autenticación JWT + PostgreSQL -->
+  <div id="authGate" class="folder-gate">
+    <div class="folder-card auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="gate-icon">🍍</div>
+      <h2 id="authTitle">Inicia sesión en Pineapple Notes</h2>
+      <p id="authSubtitle">Accede a tu espacio de notas sincronizado con PostgreSQL.</p>
+
+      <div id="authError" class="auth-error" hidden></div>
+
+      <form id="authForm" class="auth-form">
+        <label id="authNameField" class="auth-field" hidden>
+          <span>Nombre</span>
+          <input id="authName" type="text" autocomplete="name" placeholder="Tu nombre">
+        </label>
+
+        <label class="auth-field">
+          <span>Email</span>
+          <input id="authEmail" type="email" required autocomplete="email" placeholder="tu@email.com">
+        </label>
+
+        <label class="auth-field">
+          <span>Contraseña</span>
+          <input id="authPassword" type="password" required minlength="6" autocomplete="current-password" placeholder="Mínimo 6 caracteres">
+        </label>
+
+        <button id="authSubmitBtn" type="submit">Entrar</button>
+      </form>
+
+      <div class="auth-switch">
+        <span id="authSwitchText">¿No tienes cuenta todavía?</span>
+        <button id="authSwitchBtn" type="button" class="auth-link-btn">Regístrate</button>
+      </div>
     </div>
   </div>
 

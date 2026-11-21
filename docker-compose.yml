@@ -1,0 +1,35 @@
+services:
+  pineapple-front:
+    build:
+      context: ./client
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api}
+    container_name: pineapple-front
+    restart: unless-stopped
+    networks:
+      - cicd
+
+  pineapple-back:
+    build:
+      context: ./server
+    container_name: pineapple-back
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      # PostgreSQL (soporta DATABASE_URL estándar o POSTGRES_URI formato JDBC)
+      - DATABASE_URL=${DATABASE_URL:-}
+      - POSTGRES_URI=${POSTGRES_URI:-}
+      - POSTGRES_USER=${POSTGRES_USER:-}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-}
+      # JWT secrets (requeridos)
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+      # Orígenes permitidos para CORS (separados por coma)
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-}
+    networks:
+      - cicd
+
+networks:
+  cicd:
+    external: true

@@ -13,6 +13,9 @@ yarn-error.log*
 Thumbs.db
 
 # Environment & IDE
+.env
+server/.env
+client/.env
 .idea/
 .vscode/*
 !.vscode/settings.json

@@ -216,3 +216,123 @@ html.dark .folder-card .gate-warning {
     transform: scale(1) translateY(0);
   }
 }
+
+/* Auth Gate & Form */
+.auth-card {
+  width: min(420px, 100%);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.auth-field[hidden] {
+  display: none;
+}
+
+.auth-field input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.auth-field input:focus {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
+}
+
+.auth-error {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: #fdecec;
+  color: #a61b1b;
+  border: 1px solid #f5c2c2;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+html.dark .auth-error {
+  background: #3d1c1c;
+  color: #ffb4b4;
+  border-color: #6e2d2d;
+}
+
+.auth-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.auth-card .auth-link-btn {
+  width: auto;
+  margin: 0;
+  padding: 2px 4px;
+  background: transparent;
+  color: var(--blue);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.auth-card .auth-link-btn:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+.logout-btn {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.logout-btn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.footer-file-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius-md);
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.footer-file-btn:hover {
+  background: var(--hover);
+}

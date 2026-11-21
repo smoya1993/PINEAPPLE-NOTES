@@ -4,14 +4,17 @@
 
 import { STORAGE_KEYS } from './config/constants.js';
 import { state } from './core/state.js';
+import { apiService } from './services/apiService.js';
+import { authService } from './services/authService.js';
 import { fsService } from './services/fsService.js';
 import { storageService } from './services/storageService.js';
+import { authView } from './components/authView.js';
 import { sidebar } from './components/sidebar.js';
 import { editor } from './components/editor.js';
 import { toolbar } from './components/toolbar.js';
 import { $ } from './utils/dom.js';
 import { showShortcutsModal } from './utils/modal.js';
-import { toastInfo, toastSuccess } from './utils/toast.js';
+import { toastSuccess, toastError, toastInfo } from './utils/toast.js';
 
 class Application {
   constructor() {
@@ -23,22 +26,46 @@ class Application {
     this.init();
   }
 
-  init() {
+  async init() {
     this.applyThemeAndScale();
     this.bindGlobalEvents();
     this.bindStateEvents();
 
-    // Renderizado inicial
+    // Renderizado inicial base
     editor.render();
     sidebar.renderTree();
 
-    // Intentar reconectar carpeta de datos guardada
-    fsService.restoreFolder(false).then((connected) => {
-      if (!connected) {
-        const status = $('status');
-        if (status) status.textContent = 'Pulsa Seleccionar carpeta para reconectar disco';
+    // Si la sesión caduca en mitad de uso, mostrar pantalla de login
+    apiService.onUnauthorized = () => {
+      fsService.updateConnectionUi(false, null);
+      authView.show('Tu sesión ha expirado. Vuelve a iniciar sesión.');
+    };
+
+    // Inicializar formulario de autenticación
+    authView.init(async (user) => {
+      try {
+        await fsService.loadWorkspace();
+        toastSuccess(`Bienvenido, ${user.name || user.email}`);
+      } catch (err) {
+        toastError(`Error cargando workspace: ${err.message}`);
+        authView.show('No se pudo cargar tu espacio desde PostgreSQL.');
       }
     });
+
+    // Intentar restaurar sesión mediante cookie httpOnly refresh token
+    const user = await authService.restoreSession();
+    if (user) {
+      authView.hide();
+      try {
+        await fsService.loadWorkspace();
+      } catch (err) {
+        toastError(`Error conectando con PostgreSQL: ${err.message}`);
+        authView.show('Error cargando tus datos. Inicia sesión de nuevo.');
+      }
+    } else {
+      fsService.updateConnectionUi(false, null);
+      authView.show();
+    }
   }
 
   applyThemeAndScale() {
@@ -65,7 +92,7 @@ class Application {
   }
 
   bindStateEvents() {
-    state.subscribe((event, payload) => {
+    state.subscribe((event) => {
       if (['active_page_changed', 'folder_connected', 'data_replaced'].includes(event)) {
         editor.render();
         sidebar.renderTree();
@@ -87,14 +114,25 @@ class Application {
     });
     $('themeToggle')?.addEventListener('click', () => this.toggleTheme());
 
-    // Botones de acción principales
+    // Botones principales
     $('new')?.addEventListener('click', () => sidebar.createNote());
-    $('folder')?.addEventListener('click', () => fsService.selectFolderPrompt());
-    $('gateFolderBtn')?.addEventListener('click', async () => {
-      const reconnected = await fsService.restoreFolder(true);
-      if (!reconnected) {
-        await fsService.selectFolderPrompt();
-      }
+
+    // Importar datos.json a PostgreSQL
+    $('importJsonInput')?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      await fsService.importJsonFile(file);
+      e.target.value = '';
+    });
+
+    // Cerrar sesión
+    $('logoutBtn')?.addEventListener('click', async () => {
+      editor.sync();
+      await fsService.writeFile();
+      await authService.logout();
+      fsService.updateConnectionUi(false, null);
+      authView.show();
+      toastInfo('Sesión cerrada');
     });
 
     // Menú exportar
@@ -109,10 +147,10 @@ class Application {
         e.preventDefault();
         editor.sync();
         fsService.writeFile();
-        toastSuccess('Nota guardada en disco');
+        toastSuccess('Sincronizado con PostgreSQL');
       }
 
-      // Nueva nota con Ctrl + N / Alt + N
+      // Nueva nota con Ctrl + Shift + N / Alt + N
       if ((e.altKey && e.key.toLowerCase() === 'n') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'n')) {
         e.preventDefault();
         sidebar.createNote();
