@@ -6,7 +6,7 @@ pipeline {
     // Por defecto /api usa el proxy interno de Nginx (pineapple-front -> pineapple-back:3000)
     VITE_API_BASE_URL    = "/api"
     // Añade aquí tu dominio público separado por comas si usas un dominio distinto al proxy
-    ALLOWED_ORIGINS      = ""
+    ALLOWED_ORIGINS      = "https://pineapple.cheffit.duckdns.org"
   }
 
   options { timestamps() }
