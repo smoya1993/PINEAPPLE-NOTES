@@ -198,10 +198,18 @@ class EditorComponent {
             true
           );
           if (confirmed) {
+            const parentLi = block.closest('li');
             const nextAfter = block.nextElementSibling;
             block.remove();
             if (nextAfter?.classList.contains('code-after') && !nextAfter.textContent.trim()) {
               nextAfter.remove();
+            }
+            if (parentLi && !parentLi.textContent.trim() && !parentLi.querySelector('img, table, .code-block, .task-widget-block')) {
+              const parentList = parentLi.parentElement;
+              parentLi.remove();
+              if (parentList && !parentList.children.length) {
+                parentList.remove();
+              }
             }
             this.sync();
             this.editor.focus();
@@ -532,10 +540,18 @@ class EditorComponent {
             true
           );
           if (confirmed) {
+            const parentLi = block.closest('li');
             const nextAfter = block.nextElementSibling;
             block.remove();
             if (nextAfter?.classList.contains('code-after') && !nextAfter.textContent.trim()) {
               nextAfter.remove();
+            }
+            if (parentLi && !parentLi.textContent.trim() && !parentLi.querySelector('img, table, .code-block, .task-widget-block')) {
+              const parentList = parentLi.parentElement;
+              parentLi.remove();
+              if (parentList && !parentList.children.length) {
+                parentList.remove();
+              }
             }
             this.sync();
             this.editor.focus();

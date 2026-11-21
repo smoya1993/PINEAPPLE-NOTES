@@ -162,6 +162,7 @@ class ToolbarComponent {
   }
 
   insertCodeBlock() {
+    this.restoreEditorRange();
     const codeHtml = `
       <div class="code-block" contenteditable="false">
         <div class="code-head">
@@ -184,9 +185,14 @@ class ToolbarComponent {
 
     $('editor').focus();
     document.execCommand('insertHTML', false, codeHtml);
+    import('./editor.js').then(({ editor }) => {
+      editor.bindCodeBlocks();
+      editor.sync();
+    });
   }
 
   insertImportantCallout() {
+    this.restoreEditorRange();
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const range = sel.getRangeAt(0);
@@ -211,6 +217,10 @@ class ToolbarComponent {
     range.collapse(true);
     range.insertNode(callout);
     callout.insertAdjacentHTML('afterend', '<p><br></p>');
+    import('./editor.js').then(({ editor }) => {
+      editor.bindImportantCallouts();
+      editor.sync();
+    });
   }
 
   insertTaskWidget() {

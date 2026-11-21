@@ -235,14 +235,16 @@ class StateStore {
   normalize() {
     if (!Array.isArray(this.data.meetingItems)) this.data.meetingItems = [];
     if (!Array.isArray(this.data.taskItems)) this.data.taskItems = [];
-    this.ensureTasksStructure();
-    
+
     if (!Array.isArray(this.data.favorites)) this.data.favorites = [];
     this.data.favorites = [...new Set(this.data.favorites)].filter((id) =>
       this.data.pages.some((p) => p.id === id)
     );
-    
-    this.ensureMeetingStructure();
+
+    // Asegurar que activeId apunta a una página existente
+    if (this.data.pages.length && !this.data.pages.some((p) => p.id === this.data.activeId)) {
+      this.data.activeId = this.data.pages[0].id;
+    }
 
     // Reordenar páginas para garantizar secuencias válidas por nivel
     const groups = {};

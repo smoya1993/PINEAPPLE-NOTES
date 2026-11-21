@@ -84,7 +84,37 @@ export const INITIAL_DATA = {
       icon: '📝',
       parentId: null,
       order: 0,
-      content: '<h2>Tu espacio de notas empresarial</h2><p>Crea notas, subnotas, listas, tablas, widgets de tareas, resaltados pastel y bloques de código interactivos.</p><p>Los datos se guardan de forma local en tu disco con total privacidad y soberanía.</p>',
+      content: '<h2>Tu espacio de notas</h2><p>Crea notas, subnotas, listas, tablas, widgets de tareas, resaltados pastel y bloques de código interactivos.</p><p>Estas páginas iniciales son de demostración: puedes editarlas o eliminarlas libremente desde el menú <b>•••</b>.</p>',
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    },
+    {
+      id: SPECIAL_PAGES.TASKS_ID,
+      title: 'Tareas (Demo)',
+      icon: '✅',
+      parentId: null,
+      order: 1,
+      content: '<p>Gestor personal de tareas.</p>',
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    },
+    {
+      id: 'reuniones',
+      title: 'Reuniones (Demo)',
+      icon: '📅',
+      parentId: null,
+      order: 2,
+      content: '<p>Notas, acuerdos y acciones de reuniones.</p>',
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    },
+    {
+      id: SPECIAL_PAGES.MEETINGS_ID,
+      title: 'Reuniones · Cosas que comentar (Demo)',
+      icon: '💬',
+      parentId: null,
+      order: 3,
+      content: '<p>Esta página recopila los fragmentos enviados con el botón 💬.</p>',
       createdAt: Date.now(),
       updatedAt: Date.now()
     }

@@ -93,10 +93,10 @@ class Application {
 
   bindStateEvents() {
     state.subscribe((event) => {
-      if (['active_page_changed', 'folder_connected', 'data_replaced'].includes(event)) {
+      if (['active_page_changed', 'folder_connected', 'data_replaced', 'note_deleted'].includes(event)) {
         editor.render();
         sidebar.renderTree();
-      } else if (['favorites_changed', 'tree_toggle', 'note_created', 'note_duplicated', 'note_deleted'].includes(event)) {
+      } else if (['favorites_changed', 'tree_toggle', 'note_created', 'note_duplicated'].includes(event)) {
         sidebar.renderTree();
         editor.updateFavoriteButton();
       }
