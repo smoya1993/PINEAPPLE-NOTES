@@ -336,3 +336,21 @@ html.dark .auth-error {
 .footer-file-btn:hover {
   background: var(--hover);
 }
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.app-version {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}

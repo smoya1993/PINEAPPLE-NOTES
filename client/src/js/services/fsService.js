@@ -30,8 +30,10 @@ class CloudPersistenceService {
 
     if (conn) conn.classList.toggle('visible', connected);
     if (connText) {
+      const roles = Array.isArray(user?.roles) ? user.roles : [];
+      const roleLabel = roles.includes('Admin') ? 'Admin' : (roles[0] || 'BasicUser');
       connText.textContent = connected
-        ? `${user?.name || user?.email || 'Usuario'} · PostgreSQL`
+        ? `${user?.name || user?.email || 'Usuario'} · ${roleLabel}`
         : '';
     }
     if (logoutBtn) logoutBtn.hidden = !connected;
