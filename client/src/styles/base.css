@@ -60,8 +60,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 .brand-logo {
   display: block;
-  width: 245px;
-  height: 38px;
+  width: 196px;
+  height: 36px;
+  flex-shrink: 0;
   overflow: visible;
 }
 

@@ -20,7 +20,7 @@
     <!-- Sidebar / Navegación y Árbol Jerárquico -->
     <aside class="sidebar">
       <div class="brand">
-        <svg class="brand-logo" viewBox="0 0 250 38" role="img" aria-label="Pineapple Notes Enterprise">
+        <svg class="brand-logo" viewBox="0 0 212 38" role="img" aria-label="Pineapple Notes Enterprise">
           <defs>
             <linearGradient id="pnFruit" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0" stop-color="#ffe36e"/>
@@ -46,16 +46,16 @@
       <button id="new" class="new-btn" type="button">＋ Nueva nota</button>
       <div id="pages" class="pages"></div>
 
-      <!-- Controles de Visualización y Zoom -->
+      <!-- Controles de Visualización y Tema -->
       <div class="view-controls">
-        <button id="fontDown" type="button" title="Reducir escala">A−</button>
-        <button id="zoomValue" class="zoom-value" type="button" title="Restablecer tamaño (100%)">100%</button>
-        <button id="fontUp" type="button" title="Aumentar escala">A+</button>
+        <button id="fontDown" type="button" title="Reducir escala" hidden>A−</button>
+        <button id="zoomValue" class="zoom-value" type="button" title="Restablecer tamaño (100%)" hidden>100%</button>
+        <button id="fontUp" type="button" title="Aumentar escala" hidden>A+</button>
         <button id="themeToggle" class="theme-btn" type="button" title="Cambiar tema">◐ Oscuro</button>
       </div>
 
-      <!-- Acciones de Almacenamiento -->
-      <div class="footer">
+      <!-- Acciones de Almacenamiento (ocultas por defecto) -->
+      <div class="footer" hidden>
         <label class="footer-file-btn" title="Importar respaldo datos.json a PostgreSQL">
           📥 Importar JSON
           <input id="importJsonInput" type="file" accept="application/json,.json" hidden>

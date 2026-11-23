@@ -340,8 +340,8 @@ html.dark .auth-error {
 .brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 6px;
 }
 
 .app-version {
@@ -352,5 +352,11 @@ html.dark .auth-error {
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 2px 7px;
+  margin-top: 2px;
   flex-shrink: 0;
+}
+
+.footer[hidden],
+.view-controls [hidden] {
+  display: none !important;
 }
