@@ -360,3 +360,110 @@ html.dark .auth-error {
 .view-controls [hidden] {
   display: none !important;
 }
+
+/* Icon Picker Modal */
+.icon-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.icon-input-row .modal-input {
+  margin-top: 0;
+  flex: 1;
+}
+
+.icon-preview {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  font-size: 22px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.icon-gallery-toggle {
+  flex-shrink: 0;
+  padding: 9px 12px;
+  white-space: nowrap;
+}
+
+.icon-gallery-panel {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 10px;
+}
+
+.icon-gallery-panel[hidden] {
+  display: none;
+}
+
+.icon-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.icon-tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.icon-tab:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.icon-tab.active {
+  background: var(--hover);
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  max-height: 210px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.icon-cell {
+  display: grid;
+  place-items: center;
+  height: 36px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform 0.08s ease, border-color var(--transition-fast);
+}
+
+.icon-cell:hover {
+  background: var(--hover);
+  transform: scale(1.12);
+}
+
+.icon-cell.selected {
+  background: var(--hover);
+  border-color: var(--focus);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}

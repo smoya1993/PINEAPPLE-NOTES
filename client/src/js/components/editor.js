@@ -10,7 +10,7 @@ import { meetingsView } from './meetingsView.js';
 import { toolbar } from './toolbar.js';
 import { sidebar } from './sidebar.js';
 import { $, $$, esc, getDocStats, formatDate, formatDueDate } from '../utils/dom.js';
-import { showPromptModal, showConfirmModal } from '../utils/modal.js';
+import { showPromptModal, showConfirmModal, showIconPickerModal } from '../utils/modal.js';
 import { toastSuccess } from '../utils/toast.js';
 
 class EditorComponent {
@@ -587,10 +587,10 @@ class EditorComponent {
       toolbar.updateActiveStates();
     });
 
-    // Icono emoji modal prompt
+    // Selector de icono con galería
     this.iconBtn.onclick = async () => {
       const page = state.getActivePage();
-      const newIcon = await showPromptModal('Icono de la nota', 'Introduce un emoji o símbolo para la nota:', page.icon || '📄');
+      const newIcon = await showIconPickerModal(page.icon || '📄');
       if (newIcon !== null) {
         page.icon = newIcon.trim() || '📄';
         this.render();

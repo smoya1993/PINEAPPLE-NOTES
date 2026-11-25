@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38">
+  <defs>
+    <linearGradient id="pnFruit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe36e"/>
+      <stop offset=".55" stop-color="#f7b733"/>
+      <stop offset="1" stop-color="#e79018"/>
+    </linearGradient>
+    <linearGradient id="pnLeaves" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8bd450"/>
+      <stop offset="1" stop-color="#2f9d62"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(0, 0)">
+    <path d="M17 14c-5-5-7-10-6-13 5 2 8 6 9 11 0-6 2-10 6-12 1 5-1 10-5 14 5-4 10-5 14-3-3 5-8 7-14 7z" fill="url(#pnLeaves)"/>
+    <path d="M10 17c2-3 15-3 18 0 4 6 3 15-2 19-4 3-11 3-15 0-5-4-6-13-1-19z" fill="url(#pnFruit)"/>
+    <path d="M12 20l13 13m-15-7 9 10m8-15L13 34m15-7-8 9" fill="none" stroke="#c87816" stroke-width="2.1" stroke-linecap="round" opacity=".78"/>
+  </g>
+</svg>
