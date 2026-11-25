@@ -34,7 +34,7 @@ class TasksViewComponent {
 
     container.innerHTML = `
       <div class="meeting-help">
-        <b>✅ Tareas Raúl</b><br>
+        <b>✅ Tareas</b><br>
         Añade tareas, asigna prioridad y fecha límite, y gestiona su estado sin mezclarlo con el contenido de otras notas.
       </div>
       <div class="todo-panel">
